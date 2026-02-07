@@ -6,22 +6,21 @@ class SingleTeamSingleMatchEntry:
     qual_match_num: int = 0
     autoFuel: int = 0
     autoPasses: int = 0
-    autoL1Climb: boolean = False
+    autoL1Climb: bool = False
     teleFuel: int = 0
     telePasses: int = 0
 
-    l1Climb: boolean = False
-    l2Climb: boolean = False
-    l3Climb: boolean = False
+    l1Climb: bool = False
+    l2Climb: bool = False
+    l3Climb: bool = False
     
     commenter: str = ""
     comment: str = ""
-    totalPoints: int  = 0
-    robotBroke: str = ""
+    robotBroke: bool = False
     auto: str = ""
     speed: str = ""
     pickupSpeed: str = ""
-    scoring: str = ""
+    scoringSpeed: str = ""
     driverDecisiveness: str = ""
     balance: str = ""
     wouldYouPick: str = ""
@@ -31,44 +30,24 @@ class TeamData:
     team_num: int = 0
     match_data: list = field(default_factory=list)
     aveAutoPoints: float = 0
-    aveLeavePoints: float = 0
-    aveAutoL4Points: float = 0
-    aveAutoL3Points: float = 0
-    aveAutoL2Points: float = 0
-    aveAutoL1Points: float = 0
-    aveAutoProcessorPoints: float = 0
-    aveAutoNetPoints: float = 0
+    aveAutoFuelPoints: float = 0
+    aveAutoClimbPoints: float = 0
+
+    aveTeleFuelPoint: float = 0
+    aveTeleClimbPoints: float = 0
     aveTelePoints: float = 0
-    aveTeleL4Points: float = 0
-    aveTeleL3Points: float = 0
-    aveTeleL2Points: float = 0
-    aveTeleL1Points: float = 0
-    aveCoralPoints: float = 0
-    aveTeleProcessorPoints: float = 0
-    aveTeleNetPoints: float = 0
-    aveBargePoints: float = 0
-    aveAlgaePoints: float = 0
     avePoints: float = 0
-    weight: float = 0
+
     drivetrain: str = ""
-    whatGamePeiceCanIntake: str = ""
-    howDoesScoreCoral: str = ""
-    howDoesScoreAlgae: str = ""
-    canClimbFrom: str = ""
-    syle: str = ""
-    aveAlgaeRemoved: float = 0
-    noClimb: int = 0
-    park: int = 0
-    shallowClimb: int = 0
-    deepClimb: int = 0
+    fuelCapacity: int = 0
+
+
     commentNum: int = 1
     quantativeAve: float = 1
     drivetrain: str = ""
     aveSpeed: float = 0
     aveDriver: float = 0
     swerve: str = ""
-    coral: str = ""
-    algae: str = ""
     climb: str  = "" 
     riceScore: float = 0
 

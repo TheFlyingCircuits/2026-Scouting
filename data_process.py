@@ -15,21 +15,11 @@ output_worksheets = []
 total_points_rankings = []
 tele_score_rankings = []
 auto_score_rankings = []
-coral_score_rankings = []
-algae_score_rankings = []
 rice_score_rankings = []
 total_points_rankings_team_names = []
 tele_score_rankings_team_names = []
 auto_score_rankings_team_names = []
-coral_score_rankings_team_names = []
-algae_score_rankings_team_names = []
 rice_score_rankings_team_names = []
-total_points_rankings_SCA = []
-tele_score_rankings_SCA = []
-auto_score_rankings_SCA = []
-coral_score_rankings_SCA = []
-algae_score_rankings_SCA = []
-rice_score_rankings_SCA = []
 rice_scores = []
 
 DATA_START_ROW = 37
@@ -44,17 +34,11 @@ THIRD_CHART_COL = "I"
 NUM_OF_TOP_TEAMS_TO_COLOR_PER_CATEGORY = 5
 current_match_count = 0
 
-leavePointsValue = 3
-autoL1PointsValue = 3
-autoL2PointsValue = 4
-autoL3PointsValue = 6
-autoL4PointsValue = 7
-L1PointsValue = 2
-L2PointsValue = 3
-L3PointsValue = 4
-L4PointsValue = 5
-processorPointsValue = 2
-netPointsValue = 4
+fuelPointsValue = 1
+autoL1ClimbPointsValue = 15
+l1ClimbPointsValue = 10
+l1ClimbPointsValue = 20
+l1ClimbPointsValue = 30
 
 chart_colors = {
     "RED": "#EA5545",
@@ -127,6 +111,7 @@ with open(input_file_name, "r", newline="") as input_csv_file:
             # print(f"Processing Row Number {row_num + 1}")
             team_match_entry = shared_classes.SingleTeamSingleMatchEntry(
                 commenter = row_data[2],
+                
                 team_num = parse_team_number(row_data[3]),
                 qual_match_num=parse_match_number(row_data[4]),
                 leave = parseLeave(row_data[5]),
@@ -514,13 +499,11 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 if inserted == "no":
                     total_points_rankings.insert(rank, team.avePoints)
                     total_points_rankings_team_names.insert(rank, team.team_num)
-                    total_points_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
                     inserted = "yes"
                 # print(total_points_rankings[rank])
         if inserted == "no":
             total_points_rankings.append(team.avePoints)
             total_points_rankings_team_names.append(team.team_num)
-            total_points_rankings_SCA.append(team.swerve+team.coral+team.algae)
 
         inserted = "no"
         for rank in range(len(auto_score_rankings)):
@@ -528,12 +511,10 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 if inserted == "no":
                     auto_score_rankings.insert(rank, team.aveAutoPoints)
                     auto_score_rankings_team_names.insert(rank, team.team_num)
-                    auto_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
                     inserted = "yes"
         if inserted == "no":
             auto_score_rankings.append(team.aveAutoPoints)
             auto_score_rankings_team_names.append(team.team_num)
-            auto_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
 
         inserted = "no"
         for rank in range(len(tele_score_rankings)):
@@ -541,52 +522,21 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 if inserted == "no":
                     tele_score_rankings.insert(rank, team.aveTelePoints)
                     tele_score_rankings_team_names.insert(rank, team.team_num)
-                    tele_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
                     inserted = "yes"
         if inserted == "no":
             tele_score_rankings.append(team.aveTelePoints)
             tele_score_rankings_team_names.append(team.team_num)
-            tele_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
-
-        inserted = "no"
-        for rank in range(len(coral_score_rankings)):
-            if coral_score_rankings[rank] < team.aveCoralPoints:
-                if inserted == "no":
-                    coral_score_rankings.insert(rank, team.aveCoralPoints)
-                    coral_score_rankings_team_names.insert(rank, team.team_num)
-                    coral_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
-                    inserted = "yes"
-        if inserted == "no":
-            coral_score_rankings.append(team.aveCoralPoints)
-            coral_score_rankings_team_names.append(team.team_num)
-            coral_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
-
-        inserted = "no"
-        for rank in range(len(algae_score_rankings)):
-            if algae_score_rankings[rank] < team.aveAlgaePoints:
-                if inserted == "no":
-                    algae_score_rankings.insert(rank, team.aveAlgaePoints)
-                    algae_score_rankings_team_names.insert(rank, team.team_num)
-                    algae_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
-                    inserted = "yes"
-        if inserted == "no":
-            algae_score_rankings.append(team.aveAlgaePoints)
-            algae_score_rankings_team_names.append(team.team_num)
-            algae_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
 
         inserted = "no"
         for rank in range(len(rice_score_rankings)):
             if rice_score_rankings[rank] < team.riceScore:
                 if inserted == "no":
                     rice_score_rankings.insert(rank, team.riceScore)
-                    rice_score_rankings_team_names.insert(rank, team.team_num)
-                    rice_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae+team.climb)
                     rice_scores.insert(rank, team.riceScore)
                     inserted = "yes"
         if inserted == "no":
             rice_score_rankings.append(team.riceScore)
             rice_score_rankings_team_names.append(team.team_num)
-            rice_score_rankings_SCA.append(team.swerve+team.coral+team.algae+team.climb)
             rice_scores.append(team.riceScore)
 
     ranking_worksheet.write(0, 0, "S,C,A =")
@@ -609,17 +559,9 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
     if len(all_team_data.values()) < 75:
         for i in range(len(all_team_data.values())):
             ranking_worksheet.write(i + 1, 2, total_points_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 3, total_points_rankings_SCA[i])
             ranking_worksheet.write(i + 1, 4, auto_score_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 5, auto_score_rankings_SCA[i])
             ranking_worksheet.write(i + 1, 6, tele_score_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 7, tele_score_rankings_SCA[i])
-            ranking_worksheet.write(i + 1, 8, coral_score_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 9, coral_score_rankings_SCA[i])
-            ranking_worksheet.write(i + 1, 10, algae_score_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 11, algae_score_rankings_SCA[i])
             ranking_worksheet.write(i + 1, 12, rice_score_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 13, rice_score_rankings_SCA[i])
             ranking_worksheet.write(i + 1, 15, rice_scores[i])
     for i, worksheet in enumerate(output_worksheets):
         if not i == 0:
@@ -656,100 +598,100 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 # single_teams_worksheet.write(0, 6, "Scouter")
                 # single_teams_worksheet.write(0, 7, "Comment")
     # tbaSorting = tba_match_sorting
-    green_format = output_workbook.add_format()
-    green_format.set_pattern(1)
-    green_format.set_bg_color('green')
+    # green_format = output_workbook.add_format()
+    # green_format.set_pattern(1)
+    # green_format.set_bg_color('green')
 
-    yellow_format = output_workbook.add_format()
-    yellow_format.set_pattern(1)
-    yellow_format.set_bg_color('yellow')
+    # yellow_format = output_workbook.add_format()
+    # yellow_format.set_pattern(1)
+    # yellow_format.set_bg_color('yellow')
 
-    red_format = output_workbook.add_format()
-    red_format.set_pattern(1)
-    red_format.set_bg_color('red')
+    # red_format = output_workbook.add_format()
+    # red_format.set_pattern(1)
+    # red_format.set_bg_color('red')
 
-    purple_format = output_workbook.add_format()
-    purple_format.set_pattern(1)
-    purple_format.set_bg_color('purple')
+    # purple_format = output_workbook.add_format()
+    # purple_format.set_pattern(1)
+    # purple_format.set_bg_color('purple')
 
-    white_format = output_workbook.add_format()
-    white_format.set_pattern(1)
-    white_format.set_bg_color('white')
+    # white_format = output_workbook.add_format()
+    # white_format.set_pattern(1)
+    # white_format.set_bg_color('white')
 
-    accuracy_worksheet.write(0, 1, "Match")
-    accuracy_worksheet.write(0, 2, "Color")
-    accuracy_worksheet.write(0, 3, "Overall%")
-    accuracy_worksheet.write(0, 4, "Auto%")
-    accuracy_worksheet.write(0, 5, "Tele%")
-    accuracy_worksheet.write(0, 6, "Climb%")
-    accuracy_worksheet.write(0, 8, "robot1%")
-    accuracy_worksheet.write(0, 9, "robot2%")
-    accuracy_worksheet.write(0, 10, "robot3%")
-    accuracy_worksheet.write(0, 11, "scout1%")
-    accuracy_worksheet.write(0, 12, "scout2%")
-    accuracy_worksheet.write(0, 13, "scout3%")
-    tba_match_sorting.initializeTBAData()
-    def outputFormatWithTolerance(number, yellowTolerance, redTolerance):
-        format = green_format
-        if number > 40:
-            if number > 70:
-                format = red_format
-            else:
-                format = yellow_format
-        return format
-    def outputFormatMissedClimb(missedClimb):
-        if missedClimb:
-            return purple_format
-        else:
-            return white_format
-    for matchNum in range(max_matches):
-        # teamsInAMatch = [all_team_match_entries[0],all_team_match_entries[1],all_team_match_entries[2],all_team_match_entries[3],all_team_match_entries[4],all_team_match_entries[5]]
-        teamsInAMatch = []
-        for match_entry in all_team_match_entries:
-            # print(match_entry.qual_match_num)
-            # print(matchNum)
-            if match_entry.qual_match_num == matchNum+1:
-                # print(str(match_entry.qual_match_num)+ " and " + str(matchNum+1))
-                teamsInAMatch.append(match_entry)
-        # print(len(teamsInAMatch))
-        allMatchesValidationData.append(tba_match_sorting.makeBothAllianceMatchClass(teamsInAMatch,all_team_data))
-        redRow = ((matchNum+1) * 2) - 1
-        blueRow = (matchNum+1) * 2
-        accuracy_worksheet.write(redRow, 1, allMatchesValidationData[matchNum].matchNumRed)
-        accuracy_worksheet.write(redRow, 2, "Red")
+    # accuracy_worksheet.write(0, 1, "Match")
+    # accuracy_worksheet.write(0, 2, "Color")
+    # accuracy_worksheet.write(0, 3, "Overall%")
+    # accuracy_worksheet.write(0, 4, "Auto%")
+    # accuracy_worksheet.write(0, 5, "Tele%")
+    # accuracy_worksheet.write(0, 6, "Climb%")
+    # accuracy_worksheet.write(0, 8, "robot1%")
+    # accuracy_worksheet.write(0, 9, "robot2%")
+    # accuracy_worksheet.write(0, 10, "robot3%")
+    # accuracy_worksheet.write(0, 11, "scout1%")
+    # accuracy_worksheet.write(0, 12, "scout2%")
+    # accuracy_worksheet.write(0, 13, "scout3%")
+    # tba_match_sorting.initializeTBAData()
+    # def outputFormatWithTolerance(number, yellowTolerance, redTolerance):
+    #     format = green_format
+    #     if number > 40:
+    #         if number > 70:
+    #             format = red_format
+    #         else:
+    #             format = yellow_format
+    #     return format
+    # def outputFormatMissedClimb(missedClimb):
+    #     if missedClimb:
+    #         return purple_format
+    #     else:
+    #         return white_format
+    # for matchNum in range(max_matches):
+    #     # teamsInAMatch = [all_team_match_entries[0],all_team_match_entries[1],all_team_match_entries[2],all_team_match_entries[3],all_team_match_entries[4],all_team_match_entries[5]]
+    #     teamsInAMatch = []
+    #     for match_entry in all_team_match_entries:
+    #         # print(match_entry.qual_match_num)
+    #         # print(matchNum)
+    #         if match_entry.qual_match_num == matchNum+1:
+    #             # print(str(match_entry.qual_match_num)+ " and " + str(matchNum+1))
+    #             teamsInAMatch.append(match_entry)
+    #     # print(len(teamsInAMatch))
+    #     allMatchesValidationData.append(tba_match_sorting.makeBothAllianceMatchClass(teamsInAMatch,all_team_data))
+    #     redRow = ((matchNum+1) * 2) - 1
+    #     blueRow = (matchNum+1) * 2
+    #     accuracy_worksheet.write(redRow, 1, allMatchesValidationData[matchNum].matchNumRed)
+    #     accuracy_worksheet.write(redRow, 2, "Red")
 
-        redInacuracy = allMatchesValidationData[matchNum].overallInaccuracyRed
-        accuracy_worksheet.write(redRow, 3, redInacuracy, outputFormatWithTolerance(redInacuracy,40,70))
-        accuracy_worksheet.write(redRow, 4, allMatchesValidationData[matchNum].autoInaccuracyRed)
-        accuracy_worksheet.write(redRow, 5, allMatchesValidationData[matchNum].teleInaccuracyRed)
-        accuracy_worksheet.write(redRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyRed)
+    #     redInacuracy = allMatchesValidationData[matchNum].overallInaccuracyRed
+    #     accuracy_worksheet.write(redRow, 3, redInacuracy, outputFormatWithTolerance(redInacuracy,40,70))
+    #     accuracy_worksheet.write(redRow, 4, allMatchesValidationData[matchNum].autoInaccuracyRed)
+    #     accuracy_worksheet.write(redRow, 5, allMatchesValidationData[matchNum].teleInaccuracyRed)
+    #     accuracy_worksheet.write(redRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyRed)
 
-        scouter1In = allMatchesValidationData[matchNum].scouterOneInacuracyRed
-        scouter2In = allMatchesValidationData[matchNum].scouterTwoInacuracyRed
-        scouter3In = allMatchesValidationData[matchNum].scouterThreeInacuracyRed
+    #     scouter1In = allMatchesValidationData[matchNum].scouterOneInacuracyRed
+    #     scouter2In = allMatchesValidationData[matchNum].scouterTwoInacuracyRed
+    #     scouter3In = allMatchesValidationData[matchNum].scouterThreeInacuracyRed
 
-        accuracy_worksheet.write(redRow, 8, scouter1In, outputFormatWithTolerance(scouter1In,40,70))
-        accuracy_worksheet.write(redRow, 9, scouter2In, outputFormatWithTolerance(scouter2In,40,70))
-        accuracy_worksheet.write(redRow, 10, scouter3In, outputFormatWithTolerance(scouter3In,40,70))
-        accuracy_worksheet.write(redRow, 11, allMatchesValidationData[matchNum].scouterOneNameRed,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterOneMissClimbRed))
-        accuracy_worksheet.write(redRow, 12, allMatchesValidationData[matchNum].scouterTwoNameRed,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterTwoMissClimbRed))
-        accuracy_worksheet.write(redRow, 13, allMatchesValidationData[matchNum].scouterThreeNameRed,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterThreeMissClimbRed))
+    #     accuracy_worksheet.write(redRow, 8, scouter1In, outputFormatWithTolerance(scouter1In,40,70))
+    #     accuracy_worksheet.write(redRow, 9, scouter2In, outputFormatWithTolerance(scouter2In,40,70))
+    #     accuracy_worksheet.write(redRow, 10, scouter3In, outputFormatWithTolerance(scouter3In,40,70))
+    #     accuracy_worksheet.write(redRow, 11, allMatchesValidationData[matchNum].scouterOneNameRed,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterOneMissClimbRed))
+    #     accuracy_worksheet.write(redRow, 12, allMatchesValidationData[matchNum].scouterTwoNameRed,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterTwoMissClimbRed))
+    #     accuracy_worksheet.write(redRow, 13, allMatchesValidationData[matchNum].scouterThreeNameRed,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterThreeMissClimbRed))
 
-        accuracy_worksheet.write(blueRow, 1, allMatchesValidationData[matchNum].matchNumBlue)
-        accuracy_worksheet.write(blueRow, 2, "Blue")
-        blueInacuracy = allMatchesValidationData[matchNum].overallInaccuracyBlue
-        accuracy_worksheet.write(blueRow, 3, blueInacuracy, outputFormatWithTolerance(blueInacuracy,40,70))
-        accuracy_worksheet.write(blueRow, 4, allMatchesValidationData[matchNum].autoInaccuracyBlue)
-        accuracy_worksheet.write(blueRow, 5, allMatchesValidationData[matchNum].teleInaccuracyBlue)
-        accuracy_worksheet.write(blueRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyBlue)
+    #     accuracy_worksheet.write(blueRow, 1, allMatchesValidationData[matchNum].matchNumBlue)
+    #     accuracy_worksheet.write(blueRow, 2, "Blue")
+    #     blueInacuracy = allMatchesValidationData[matchNum].overallInaccuracyBlue
+    #     accuracy_worksheet.write(blueRow, 3, blueInacuracy, outputFormatWithTolerance(blueInacuracy,40,70))
+    #     accuracy_worksheet.write(blueRow, 4, allMatchesValidationData[matchNum].autoInaccuracyBlue)
+    #     accuracy_worksheet.write(blueRow, 5, allMatchesValidationData[matchNum].teleInaccuracyBlue)
+    #     accuracy_worksheet.write(blueRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyBlue)
 
-        scouter1In = allMatchesValidationData[matchNum].scouterOneInacuracyBlue
-        scouter2In = allMatchesValidationData[matchNum].scouterTwoInacuracyBlue
-        scouter3In = allMatchesValidationData[matchNum].scouterThreeInacuracyBlue
-        accuracy_worksheet.write(blueRow, 8, scouter1In, outputFormatWithTolerance(scouter1In,40,70))
-        accuracy_worksheet.write(blueRow, 9, scouter2In, outputFormatWithTolerance(scouter2In,40,70))
-        accuracy_worksheet.write(blueRow, 10, scouter3In, outputFormatWithTolerance(scouter3In,40,70))
-        accuracy_worksheet.write(blueRow, 11, allMatchesValidationData[matchNum].scouterOneNameBlue,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterOneMissClimbBlue))
-        accuracy_worksheet.write(blueRow, 12, allMatchesValidationData[matchNum].scouterTwoNameBlue,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterTwoMissClimbBlue))
-        accuracy_worksheet.write(blueRow, 13, allMatchesValidationData[matchNum].scouterThreeNameBlue,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterThreeMissClimbBlue))
-    print("Outputsheet done!!!")
+    #     scouter1In = allMatchesValidationData[matchNum].scouterOneInacuracyBlue
+    #     scouter2In = allMatchesValidationData[matchNum].scouterTwoInacuracyBlue
+    #     scouter3In = allMatchesValidationData[matchNum].scouterThreeInacuracyBlue
+    #     accuracy_worksheet.write(blueRow, 8, scouter1In, outputFormatWithTolerance(scouter1In,40,70))
+    #     accuracy_worksheet.write(blueRow, 9, scouter2In, outputFormatWithTolerance(scouter2In,40,70))
+    #     accuracy_worksheet.write(blueRow, 10, scouter3In, outputFormatWithTolerance(scouter3In,40,70))
+    #     accuracy_worksheet.write(blueRow, 11, allMatchesValidationData[matchNum].scouterOneNameBlue,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterOneMissClimbBlue))
+    #     accuracy_worksheet.write(blueRow, 12, allMatchesValidationData[matchNum].scouterTwoNameBlue,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterTwoMissClimbBlue))
+    #     accuracy_worksheet.write(blueRow, 13, allMatchesValidationData[matchNum].scouterThreeNameBlue,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterThreeMissClimbBlue))
+    # print("Outputsheet done!!!")
