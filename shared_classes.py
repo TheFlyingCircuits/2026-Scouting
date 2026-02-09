@@ -5,10 +5,8 @@ class SingleTeamSingleMatchEntry:
     team_num: int = 0
     qual_match_num: int = 0
     autoFuel: int = 0
-    autoPasses: int = 0
     autoL1Climb: bool = False
     teleFuel: int = 0
-    telePasses: int = 0
 
     l1Climb: bool = False
     l2Climb: bool = False
@@ -16,6 +14,7 @@ class SingleTeamSingleMatchEntry:
     
     commenter: str = ""
     comment: str = ""
+    passes: str = ""
     robotBroke: bool = False
     auto: str = ""
     speed: str = ""
@@ -24,6 +23,10 @@ class SingleTeamSingleMatchEntry:
     driverDecisiveness: str = ""
     balance: str = ""
     wouldYouPick: str = ""
+
+    defenseOnScoring: bool = False
+    defenseOnIntaking: bool = False
+    defenseOnPathing: bool = False
 
 @dataclass
 class TeamData:

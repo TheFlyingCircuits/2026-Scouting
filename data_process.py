@@ -94,6 +94,20 @@ def parseLeave(leave):
         return True
     if leave == "No":
         return False
+    
+def getStringSeparated(unsortedString: str):
+    sortedStrings = []
+    baseOfSubString = 0
+    for i, char in enumerate(unsortedString):
+        newString = ""
+        if(char == ','):
+            for e in range(i-baseOfSubString):
+                newString = newString+unsortedString[e+baseOfSubString]
+            sortedStrings.append(newString)
+            baseOfSubString = i+1
+    return sortedStrings
+    
+
 
 with open(input_file_name, "r", newline="") as input_csv_file:
 
@@ -109,36 +123,18 @@ with open(input_file_name, "r", newline="") as input_csv_file:
             # Put all of the information from a single row in excel into a python object
             # called "team_match_entry" to make it easier to deal with later on
             # print(f"Processing Row Number {row_num + 1}")
+            strings = getStringSeparated(row_data[8])
+            print(strings[2])
             team_match_entry = shared_classes.SingleTeamSingleMatchEntry(
                 commenter = row_data[2],
-                
                 team_num = parse_team_number(row_data[3]),
                 qual_match_num=parse_match_number(row_data[4]),
-                leave = parseLeave(row_data[5]),
-                autoL4 = get_highest_number(row_data[6]),
-                autoL3 = get_highest_number(row_data[7]),
-                autoL2 = get_highest_number(row_data[8]),
-                autoL1 = get_highest_number(row_data[9]),
-                autoProcessor = get_highest_number(row_data[10]),
-                autoNet = get_highest_number(row_data[11]),
-                algaeRemoved = get_highest_number(row_data[12] + row_data[19]),
-                teleL4 = get_highest_number(row_data[13]),
-                teleL3 = get_highest_number(row_data[14]),
-                teleL2 = get_highest_number(row_data[15]),
-                teleL1 = get_highest_number(row_data[16]),
-                teleProcessor = get_highest_number(row_data[17]),
-                teleNet = get_highest_number(row_data[18]),
-                climb = row_data[20],
+                autoFuel = row_data[5],
+                autoL1Climb = True if row_data[6] == "Yes" else False,
 
-                auto = row_data[24],
-                speed = row_data[25],
-                pickupSpeed = row_data[26],
-                scoring = row_data[27],
-                driverDecisiveness = row_data[28],
-                balance = row_data[29],
-                wouldYouPick = row_data[30],
-                robotBroke = row_data[31],
-                comment = row_data[32],
+                teleFuel = row_data[7],
+
+                defenseOnScoring = True if row_data[8] == "Yes" else False,
 
             )
             # Add the single-team single-match entry (i.e. data from one row) to a list
@@ -292,64 +288,64 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                     single_teams_worksheet.write(single_teams_data.commentNum + 38, 3, match.commenter)
                     single_teams_data.commentNum =  single_teams_data.commentNum + 1
                         # for ever match the team played add the point now and avereges the by times itterated after
-                    if match.leave == True:
-                        # print(match.leave)
-                        single_teams_data.aveLeavePoints = single_teams_data.aveLeavePoints + leavePointsValue
-                    single_teams_data.aveSpeed = speed
-                    single_teams_data.aveDriver = driverDecisiveness
-                    single_teams_data.aveAutoL4Points = single_teams_data.aveAutoL4Points + (match.autoL4 * autoL4PointsValue)
-                    single_teams_data.aveAutoL3Points = single_teams_data.aveAutoL3Points + (match.autoL3 * autoL3PointsValue)
-                    single_teams_data.aveAutoL2Points = single_teams_data.aveAutoL2Points + (match.autoL2 * autoL2PointsValue)
-                    single_teams_data.aveAutoL1Points = single_teams_data.aveAutoL1Points + (match.autoL1 * autoL1PointsValue)
-                    single_teams_data.aveAutoProcessorPoints = single_teams_data.aveAutoProcessorPoints + (match.autoProcessor * 
-                    processorPointsValue)
-                    single_teams_data.aveAutoNetPoints = single_teams_data.aveAutoNetPoints + (match.autoNet * netPointsValue)
-                    single_teams_data.aveTeleL4Points = single_teams_data.aveTeleL4Points + (match.teleL4 * L4PointsValue)
-                    single_teams_data.aveTeleL3Points = single_teams_data.aveTeleL3Points + (match.teleL3 * L3PointsValue)
-                    single_teams_data.aveTeleL2Points = single_teams_data.aveTeleL2Points + (match.teleL2 * L2PointsValue)
-                    single_teams_data.aveTeleL1Points = single_teams_data.aveTeleL1Points + (match.teleL1 * L1PointsValue)
-                    single_teams_data.aveTeleProcessorPoints = single_teams_data.aveTeleProcessorPoints + (match.teleProcessor * 
-                    processorPointsValue)
-                    single_teams_data.aveTeleNetPoints = single_teams_data.aveTeleNetPoints + (match.teleNet * netPointsValue)
-                    climb: int = 0
-                    if match.climb == "Climb on the deep cage":
-                        single_teams_data.aveBargePoints = single_teams_data.aveBargePoints + 12
-                        single_teams_data.deepClimb = single_teams_data.deepClimb + 1
-                        climb = 12
-                    elif match.climb == "Climb on the shallow cage":
-                        single_teams_data.aveBargePoints = single_teams_data.aveBargePoints + 6
-                        single_teams_data.shallowClimb = single_teams_data.shallowClimb + 1
-                        climb = 6
-                    elif match.climb == "Park in the barge zone":
-                        single_teams_data.aveBargePoints = single_teams_data.aveBargePoints + 2
-                        single_teams_data.park = single_teams_data.park + 1
-                        climb = 2
-                    else:
-                        single_teams_data.noClimb = single_teams_data.noClimb + 1
-                        climb = 0
+                    # if match.leave == True:
+                    #     # print(match.leave)
+                    #     single_teams_data.aveLeavePoints = single_teams_data.aveLeavePoints + leavePointsValue
+                    # single_teams_data.aveSpeed = speed
+                    # single_teams_data.aveDriver = driverDecisiveness
+                    # single_teams_data.aveAutoL4Points = single_teams_data.aveAutoL4Points + (match.autoL4 * autoL4PointsValue)
+                    # single_teams_data.aveAutoL3Points = single_teams_data.aveAutoL3Points + (match.autoL3 * autoL3PointsValue)
+                    # single_teams_data.aveAutoL2Points = single_teams_data.aveAutoL2Points + (match.autoL2 * autoL2PointsValue)
+                    # single_teams_data.aveAutoL1Points = single_teams_data.aveAutoL1Points + (match.autoL1 * autoL1PointsValue)
+                    # single_teams_data.aveAutoProcessorPoints = single_teams_data.aveAutoProcessorPoints + (match.autoProcessor * 
+                    # processorPointsValue)
+                    # single_teams_data.aveAutoNetPoints = single_teams_data.aveAutoNetPoints + (match.autoNet * netPointsValue)
+                    # single_teams_data.aveTeleL4Points = single_teams_data.aveTeleL4Points + (match.teleL4 * L4PointsValue)
+                    # single_teams_data.aveTeleL3Points = single_teams_data.aveTeleL3Points + (match.teleL3 * L3PointsValue)
+                    # single_teams_data.aveTeleL2Points = single_teams_data.aveTeleL2Points + (match.teleL2 * L2PointsValue)
+                    # single_teams_data.aveTeleL1Points = single_teams_data.aveTeleL1Points + (match.teleL1 * L1PointsValue)
+                    # single_teams_data.aveTeleProcessorPoints = single_teams_data.aveTeleProcessorPoints + (match.teleProcessor * 
+                    # processorPointsValue)
+                    # single_teams_data.aveTeleNetPoints = single_teams_data.aveTeleNetPoints + (match.teleNet * netPointsValue)
+                    # climb: int = 0
+                    # if match.climb == "Climb on the deep cage":
+                    #     single_teams_data.aveBargePoints = single_teams_data.aveBargePoints + 12
+                    #     single_teams_data.deepClimb = single_teams_data.deepClimb + 1
+                    #     climb = 12
+                    # elif match.climb == "Climb on the shallow cage":
+                    #     single_teams_data.aveBargePoints = single_teams_data.aveBargePoints + 6
+                    #     single_teams_data.shallowClimb = single_teams_data.shallowClimb + 1
+                    #     climb = 6
+                    # elif match.climb == "Park in the barge zone":
+                    #     single_teams_data.aveBargePoints = single_teams_data.aveBargePoints + 2
+                    #     single_teams_data.park = single_teams_data.park + 1
+                    #     climb = 2
+                    # else:
+                    #     single_teams_data.noClimb = single_teams_data.noClimb + 1
+                    #     climb = 0
                     
-                    single_teams_data.aveAutoPoints = (single_teams_data.aveLeavePoints + 
-                    single_teams_data.aveAutoL4Points + single_teams_data.aveAutoL3Points + single_teams_data.aveAutoL2Points +
-                    single_teams_data.aveAutoL1Points + single_teams_data.aveAutoProcessorPoints + single_teams_data.aveAutoNetPoints)
+                    # single_teams_data.aveAutoPoints = (single_teams_data.aveLeavePoints + 
+                    # single_teams_data.aveAutoL4Points + single_teams_data.aveAutoL3Points + single_teams_data.aveAutoL2Points +
+                    # single_teams_data.aveAutoL1Points + single_teams_data.aveAutoProcessorPoints + single_teams_data.aveAutoNetPoints)
 
-                    single_teams_data.aveTelePoints = (single_teams_data.aveTeleL4Points + single_teams_data.aveTeleL3Points + 
-                    single_teams_data.aveTeleL2Points + single_teams_data.aveTeleL1Points +
-                    single_teams_data.aveTeleProcessorPoints + single_teams_data.aveTeleNetPoints + single_teams_data.aveBargePoints)
+                    # single_teams_data.aveTelePoints = (single_teams_data.aveTeleL4Points + single_teams_data.aveTeleL3Points + 
+                    # single_teams_data.aveTeleL2Points + single_teams_data.aveTeleL1Points +
+                    # single_teams_data.aveTeleProcessorPoints + single_teams_data.aveTeleNetPoints + single_teams_data.aveBargePoints)
 
-                    single_teams_data.avePoints = single_teams_data.aveAutoPoints + single_teams_data.aveTelePoints
+                    # single_teams_data.avePoints = single_teams_data.aveAutoPoints + single_teams_data.aveTelePoints
 
-                    single_teams_data.aveAlgaeRemoved = single_teams_data.aveAlgaeRemoved + match.algaeRemoved
+                    # single_teams_data.aveAlgaeRemoved = single_teams_data.aveAlgaeRemoved + match.algaeRemoved
 
-                    points.append(leavePointsValue+(match.autoL4 * autoL4PointsValue)+(match.autoL3 * autoL3PointsValue)+(match.autoL2 * autoL2PointsValue) +
-                    (match.autoL1 * autoL1PointsValue)+(match.autoProcessor * processorPointsValue)+(match.autoNet * netPointsValue)+
-                    (match.teleL4 * L4PointsValue)+(match.teleL3 * L3PointsValue)+(match.teleL2 * L2PointsValue)+(match.teleL1 * L1PointsValue)+
-                    (match.teleProcessor * processorPointsValue)+(match.teleNet * netPointsValue)+climb)
+                    # points.append(leavePointsValue+(match.autoL4 * autoL4PointsValue)+(match.autoL3 * autoL3PointsValue)+(match.autoL2 * autoL2PointsValue) +
+                    # (match.autoL1 * autoL1PointsValue)+(match.autoProcessor * processorPointsValue)+(match.autoNet * netPointsValue)+
+                    # (match.teleL4 * L4PointsValue)+(match.teleL3 * L3PointsValue)+(match.teleL2 * L2PointsValue)+(match.teleL1 * L1PointsValue)+
+                    # (match.teleProcessor * processorPointsValue)+(match.teleNet * netPointsValue)+climb)
                     
-                    auto_points.append((leavePointsValue+(match.autoL4 * autoL4PointsValue)+(match.autoL3 * autoL3PointsValue)+(match.autoL2 * autoL2PointsValue) +
-                    (match.autoL1 * autoL1PointsValue)+(match.autoProcessor * processorPointsValue)+(match.autoNet * netPointsValue)))
+                    # auto_points.append((leavePointsValue+(match.autoL4 * autoL4PointsValue)+(match.autoL3 * autoL3PointsValue)+(match.autoL2 * autoL2PointsValue) +
+                    # (match.autoL1 * autoL1PointsValue)+(match.autoProcessor * processorPointsValue)+(match.autoNet * netPointsValue)))
                     
-                    tele_points.append(((match.teleL4 * L4PointsValue)+(match.teleL3 * L3PointsValue)+(match.teleL2 * L2PointsValue)+(match.teleL1 * L1PointsValue)+
-                    (match.teleProcessor * processorPointsValue)+(match.teleNet * netPointsValue)+climb))
+                    # tele_points.append(((match.teleL4 * L4PointsValue)+(match.teleL3 * L3PointsValue)+(match.teleL2 * L2PointsValue)+(match.teleL1 * L1PointsValue)+
+                    # (match.teleProcessor * processorPointsValue)+(match.teleNet * netPointsValue)+climb))
                     
                     matches.append(match.qual_match_num)
 
@@ -386,203 +382,203 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
 
                 single_teams_worksheet.write(8, 2, single_teams_data.quantativeAve)
 
-                if (single_teams_data.aveCoralPoints > 10):
-                    single_teams_data.coral = "✅"
-                else:
-                    single_teams_data.coral = "❌"
+                # if (single_teams_data.aveCoralPoints > 10):
+                #     single_teams_data.coral = "✅"
+                # else:
+                #     single_teams_data.coral = "❌"
                 
-                if (single_teams_data.aveAlgaePoints > 2):
-                    single_teams_data.algae = "✅"
-                else:
-                    single_teams_data.algae = "❌"
-                if (single_teams_data.aveBargePoints > 5):
-                    single_teams_data.climb = "✅"
-                else:
-                    single_teams_data.climb = "❌"
+                # if (single_teams_data.aveAlgaePoints > 2):
+                #     single_teams_data.algae = "✅"
+                # else:
+                #     single_teams_data.algae = "❌"
+                # if (single_teams_data.aveBargePoints > 5):
+                #     single_teams_data.climb = "✅"
+                # else:
+                #     single_teams_data.climb = "❌"
 
 
-                allClimbs = (single_teams_data.deepClimb + single_teams_data.shallowClimb +
-                single_teams_data.park + single_teams_data.noClimb)
-                climb_categories = ["Climb on the deep cage", "Climb on the shallow cage", "Park", "No Climb", ]
-                climb_values = [(single_teams_data.deepClimb/allClimbs),(single_teams_data.shallowClimb/allClimbs),
-                (single_teams_data.park/allClimbs),(single_teams_data.noClimb/allClimbs)]
+                # allClimbs = (single_teams_data.deepClimb + single_teams_data.shallowClimb +
+                # single_teams_data.park + single_teams_data.noClimb)
+                # climb_categories = ["Climb on the deep cage", "Climb on the shallow cage", "Park", "No Climb", ]
+                # climb_values = [(single_teams_data.deepClimb/allClimbs),(single_teams_data.shallowClimb/allClimbs),
+                # (single_teams_data.park/allClimbs),(single_teams_data.noClimb/allClimbs)]
 
                 
-                for i, (category, value) in enumerate(zip(climb_categories, climb_values)):
-                    single_teams_worksheet.write(DATA_START_ROW + 2 + i, 19, category)
-                    single_teams_worksheet.write(DATA_START_ROW + 2 + i, 20, value)     
+                # for i, (category, value) in enumerate(zip(climb_categories, climb_values)):
+                #     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 19, category)
+                #     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 20, value)     
 
-                # Create the pie chart
-                barge_pie_chart = output_workbook.add_chart({'type': 'pie'})
-                barge_pie_chart.set_title({'name': 'Endgame Climb Distribution'})
-                barge_pie_chart.add_series({
-                    'name': 'Climb Level',
-                    'categories': f'={single_teams_data.team_num}!T{DATA_START_ROW + 2}:T{DATA_START_ROW + 6}',
-                    'values': f'={single_teams_data.team_num}!U{DATA_START_ROW + 2}:U{DATA_START_ROW + 6}',
-                    'data_labels': {'percentage': True},
-                    'points': [
-                        {'fill': {'color': chart_colors["RED"]}},
-                        {'fill': {'color': chart_colors["YELLOW"]}},
-                        {'fill': {'color': chart_colors["BLUE"]}},
-                        {'fill': {'color': chart_colors["GREEN"]}},
-                    ]
-                })
+                # # Create the pie chart
+                # barge_pie_chart = output_workbook.add_chart({'type': 'pie'})
+                # barge_pie_chart.set_title({'name': 'Endgame Climb Distribution'})
+                # barge_pie_chart.add_series({
+                #     'name': 'Climb Level',
+                #     'categories': f'={single_teams_data.team_num}!T{DATA_START_ROW + 2}:T{DATA_START_ROW + 6}',
+                #     'values': f'={single_teams_data.team_num}!U{DATA_START_ROW + 2}:U{DATA_START_ROW + 6}',
+                #     'data_labels': {'percentage': True},
+                #     'points': [
+                #         {'fill': {'color': chart_colors["RED"]}},
+                #         {'fill': {'color': chart_colors["YELLOW"]}},
+                #         {'fill': {'color': chart_colors["BLUE"]}},
+                #         {'fill': {'color': chart_colors["GREEN"]}},
+                #     ]
+                # })
 
-                single_teams_worksheet.insert_chart(f"{FIRST_CHART_COL}{CHART_START_ROW + CHART_ROW_SPACING}", barge_pie_chart)
+                # single_teams_worksheet.insert_chart(f"{FIRST_CHART_COL}{CHART_START_ROW + CHART_ROW_SPACING}", barge_pie_chart)
 
-                # Write the match numbers and points to the worksheet
+                # # Write the match numbers and points to the worksheet
 
-                max_matches = 94
-                limit_matches = matches[:max_matches]
-                limit_auto_points = auto_points[:max_matches]
-                limit_tele_points = tele_points[:max_matches]
+                # max_matches = 94
+                # limit_matches = matches[:max_matches]
+                # limit_auto_points = auto_points[:max_matches]
+                # limit_tele_points = tele_points[:max_matches]
                 
-                for i, aPoints in enumerate(limit_auto_points):
-                    # print(f"Writing {aPoints} to row {DATA_START_ROW + 1 + i}")
-                    single_teams_worksheet.write(DATA_START_ROW + 2 + i, 1, aPoints)
+                # for i, aPoints in enumerate(limit_auto_points):
+                #     # print(f"Writing {aPoints} to row {DATA_START_ROW + 1 + i}")
+                #     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 1, aPoints)
 
-                for i, match_num in enumerate(limit_matches):
-                    if (match_num < 2):
-                        1==1
-                    else:
-                        single_teams_worksheet.write(DATA_START_ROW + 2 + i, 0, match_num)
+                # for i, match_num in enumerate(limit_matches):
+                #     if (match_num < 2):
+                #         1==1
+                #     else:
+                #         single_teams_worksheet.write(DATA_START_ROW + 2 + i, 0, match_num)
                 
-                for i, tPoints in enumerate(limit_tele_points):
-                    # print(f"Writing {tPoints} to row {DATA_START_ROW + 1 + i}")
-                    single_teams_worksheet.write(DATA_START_ROW + 2 + i, 2, tPoints)
+                # for i, tPoints in enumerate(limit_tele_points):
+                #     # print(f"Writing {tPoints} to row {DATA_START_ROW + 1 + i}")
+                #     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 2, tPoints)
 
-                # Create the line chart
-                a_points_line_chart = output_workbook.add_chart({'type': 'line'})
-                a_points_line_chart.set_title({'name': 'Auto Points Over Time'})
-                a_points_line_chart.set_x_axis({'name': 'Match Number'})
-                a_points_line_chart.set_y_axis({'name': 'Auto Points'})
+                # # Create the line chart
+                # a_points_line_chart = output_workbook.add_chart({'type': 'line'})
+                # a_points_line_chart.set_title({'name': 'Auto Points Over Time'})
+                # a_points_line_chart.set_x_axis({'name': 'Match Number'})
+                # a_points_line_chart.set_y_axis({'name': 'Auto Points'})
                 
-                num_matches = matches[len(matches) -1]
+                # num_matches = matches[len(matches) -1]
 
-                a_points_line_chart.add_series({
-                    'name': 'Points',
-                    'categories': f'={team_num}!$A${DATA_START_ROW + 2}:$A${DATA_START_ROW + 1 + num_matches}',
-                    'values': f'={team_num}!$B${DATA_START_ROW + 2}:$B${DATA_START_ROW + 1 + num_matches}',
-                    'line': {'color': 'blue'}
-                })
+                # a_points_line_chart.add_series({
+                #     'name': 'Points',
+                #     'categories': f'={team_num}!$A${DATA_START_ROW + 2}:$A${DATA_START_ROW + 1 + num_matches}',
+                #     'values': f'={team_num}!$B${DATA_START_ROW + 2}:$B${DATA_START_ROW + 1 + num_matches}',
+                #     'line': {'color': 'blue'}
+                # })
 
-                line_chart_row = CHART_START_ROW + CHART_ROW_SPACING  # Adjust the row number as needed
-                single_teams_worksheet.insert_chart(f"{THIRD_CHART_COL}{CHART_START_ROW + CHART_ROW_SPACING}", a_points_line_chart)
+                # line_chart_row = CHART_START_ROW + CHART_ROW_SPACING  # Adjust the row number as needed
+                # single_teams_worksheet.insert_chart(f"{THIRD_CHART_COL}{CHART_START_ROW + CHART_ROW_SPACING}", a_points_line_chart)
 
 
-                # Create the line chart
-                t_points_line_chart = output_workbook.add_chart({'type': 'line'})
-                t_points_line_chart.set_title({'name': 'Tele Points Over Time'})
-                t_points_line_chart.set_x_axis({'name': 'Match Number'})
-                t_points_line_chart.set_y_axis({'name': 'Tele Points'})
+                # # Create the line chart
+                # t_points_line_chart = output_workbook.add_chart({'type': 'line'})
+                # t_points_line_chart.set_title({'name': 'Tele Points Over Time'})
+                # t_points_line_chart.set_x_axis({'name': 'Match Number'})
+                # t_points_line_chart.set_y_axis({'name': 'Tele Points'})
                 
-                num_matches = matches[len(matches) - 1]
+                # num_matches = matches[len(matches) - 1]
 
-                t_points_line_chart.add_series({
-                    'name': 'Points',
-                    'categories': f'={team_num}!$A${DATA_START_ROW + 2}:$A${DATA_START_ROW + 1 + num_matches}',
-                    'values': f'={team_num}!$C${DATA_START_ROW + 2}:$C${DATA_START_ROW + 1 + num_matches}',
-                    'line': {'color': 'blue'}
-                })
+                # t_points_line_chart.add_series({
+                #     'name': 'Points',
+                #     'categories': f'={team_num}!$A${DATA_START_ROW + 2}:$A${DATA_START_ROW + 1 + num_matches}',
+                #     'values': f'={team_num}!$C${DATA_START_ROW + 2}:$C${DATA_START_ROW + 1 + num_matches}',
+                #     'line': {'color': 'blue'}
+                # })
 
-                line_chart_row = CHART_START_ROW + CHART_ROW_SPACING  # Adjust the row number as needed
-                single_teams_worksheet.insert_chart(f"{"Q"}{line_chart_row }", t_points_line_chart)
+                # line_chart_row = CHART_START_ROW + CHART_ROW_SPACING  # Adjust the row number as needed
+                # single_teams_worksheet.insert_chart(f"{"Q"}{line_chart_row }", t_points_line_chart)
 
 
     # does all the rankings
-    for i, team in enumerate(all_team_data.values()):
-        inserted = "no"
-        # print(team.team_num)
-        # print(team.aveTelePoints)
-        for rank in range(len(total_points_rankings)):
-            if total_points_rankings[rank] < team.avePoints:
-                if inserted == "no":
-                    total_points_rankings.insert(rank, team.avePoints)
-                    total_points_rankings_team_names.insert(rank, team.team_num)
-                    inserted = "yes"
-                # print(total_points_rankings[rank])
-        if inserted == "no":
-            total_points_rankings.append(team.avePoints)
-            total_points_rankings_team_names.append(team.team_num)
+    # for i, team in enumerate(all_team_data.values()):
+    #     inserted = "no"
+    #     # print(team.team_num)
+    #     # print(team.aveTelePoints)
+    #     for rank in range(len(total_points_rankings)):
+    #         if total_points_rankings[rank] < team.avePoints:
+    #             if inserted == "no":
+    #                 total_points_rankings.insert(rank, team.avePoints)
+    #                 total_points_rankings_team_names.insert(rank, team.team_num)
+    #                 inserted = "yes"
+    #             # print(total_points_rankings[rank])
+    #     if inserted == "no":
+    #         total_points_rankings.append(team.avePoints)
+    #         total_points_rankings_team_names.append(team.team_num)
 
-        inserted = "no"
-        for rank in range(len(auto_score_rankings)):
-            if auto_score_rankings[rank] < team.aveAutoPoints:
-                if inserted == "no":
-                    auto_score_rankings.insert(rank, team.aveAutoPoints)
-                    auto_score_rankings_team_names.insert(rank, team.team_num)
-                    inserted = "yes"
-        if inserted == "no":
-            auto_score_rankings.append(team.aveAutoPoints)
-            auto_score_rankings_team_names.append(team.team_num)
+    #     inserted = "no"
+    #     for rank in range(len(auto_score_rankings)):
+    #         if auto_score_rankings[rank] < team.aveAutoPoints:
+    #             if inserted == "no":
+    #                 auto_score_rankings.insert(rank, team.aveAutoPoints)
+    #                 auto_score_rankings_team_names.insert(rank, team.team_num)
+    #                 inserted = "yes"
+    #     if inserted == "no":
+    #         auto_score_rankings.append(team.aveAutoPoints)
+    #         auto_score_rankings_team_names.append(team.team_num)
 
-        inserted = "no"
-        for rank in range(len(tele_score_rankings)):
-            if tele_score_rankings[rank] < team.aveTelePoints:
-                if inserted == "no":
-                    tele_score_rankings.insert(rank, team.aveTelePoints)
-                    tele_score_rankings_team_names.insert(rank, team.team_num)
-                    inserted = "yes"
-        if inserted == "no":
-            tele_score_rankings.append(team.aveTelePoints)
-            tele_score_rankings_team_names.append(team.team_num)
+    #     inserted = "no"
+    #     for rank in range(len(tele_score_rankings)):
+    #         if tele_score_rankings[rank] < team.aveTelePoints:
+    #             if inserted == "no":
+    #                 tele_score_rankings.insert(rank, team.aveTelePoints)
+    #                 tele_score_rankings_team_names.insert(rank, team.team_num)
+    #                 inserted = "yes"
+    #     if inserted == "no":
+    #         tele_score_rankings.append(team.aveTelePoints)
+    #         tele_score_rankings_team_names.append(team.team_num)
 
-        inserted = "no"
-        for rank in range(len(rice_score_rankings)):
-            if rice_score_rankings[rank] < team.riceScore:
-                if inserted == "no":
-                    rice_score_rankings.insert(rank, team.riceScore)
-                    rice_scores.insert(rank, team.riceScore)
-                    inserted = "yes"
-        if inserted == "no":
-            rice_score_rankings.append(team.riceScore)
-            rice_score_rankings_team_names.append(team.team_num)
-            rice_scores.append(team.riceScore)
+    #     inserted = "no"
+    #     for rank in range(len(rice_score_rankings)):
+    #         if rice_score_rankings[rank] < team.riceScore:
+    #             if inserted == "no":
+    #                 rice_score_rankings.insert(rank, team.riceScore)
+    #                 rice_scores.insert(rank, team.riceScore)
+    #                 inserted = "yes"
+    #     if inserted == "no":
+    #         rice_score_rankings.append(team.riceScore)
+    #         rice_score_rankings_team_names.append(team.team_num)
+    #         rice_scores.append(team.riceScore)
 
-    ranking_worksheet.write(0, 0, "S,C,A =")
-    ranking_worksheet.write(1, 0, "Swerve")
-    ranking_worksheet.write(2, 0, "Coral")
-    ranking_worksheet.write(3, 0, "Algae")
-    ranking_worksheet.write(0, 2, "Total")
-    ranking_worksheet.write(0, 3, "S,C,A")
-    ranking_worksheet.write(0, 4, "Auto")
-    ranking_worksheet.write(0, 5, "S,C,A")
-    ranking_worksheet.write(0, 6, "Tele")
-    ranking_worksheet.write(0, 7, "S,C,A")
-    ranking_worksheet.write(0, 8, "Coral")
-    ranking_worksheet.write(0, 9, "S,C,A")
-    ranking_worksheet.write(0, 10, "Algae")
-    ranking_worksheet.write(0, 11, "S,C,A")
-    ranking_worksheet.write(0, 12, "Rice Score")
-    ranking_worksheet.write(0, 13, "S,C,A, CLIMB")
-    ranking_worksheet.write(0, 14, "Rice Score")
-    if len(all_team_data.values()) < 75:
-        for i in range(len(all_team_data.values())):
-            ranking_worksheet.write(i + 1, 2, total_points_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 4, auto_score_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 6, tele_score_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 12, rice_score_rankings_team_names[i])
-            ranking_worksheet.write(i + 1, 15, rice_scores[i])
-    for i, worksheet in enumerate(output_worksheets):
-        if not i == 0:
-            for e in range(len(total_points_rankings_team_names)):
-                if team_num_list[i-1] == total_points_rankings_team_names[e]:
-                    worksheet.write(1, 2, e+1)
-            for e in range(len(team_num_list)):
-                if team_num_list[i-1] ==auto_score_rankings_team_names[e]:
-                    worksheet.write(2, 2, e+1)
-            for e in range(len(team_num_list)):
-                if team_num_list[i-1] == tele_score_rankings_team_names[e]:
-                    worksheet.write(3, 2, e+1)
-            for e in range(len(coral_score_rankings_team_names)):
-                if team_num_list[i-1] == coral_score_rankings_team_names[e]:
-                    worksheet.write(4, 2, e+1)
-            for e in range(len(team_num_list)):
-                if team_num_list[i-1] == algae_score_rankings_team_names[e]:
-                    worksheet.write(5, 2, e+1)
-            for e in range(len(team_num_list)):
-                if team_num_list[i-1] == rice_score_rankings_team_names[e]:
-                    worksheet.write(6, 2, e+1)
+    # ranking_worksheet.write(0, 0, "S,C,A =")
+    # ranking_worksheet.write(1, 0, "Swerve")
+    # ranking_worksheet.write(2, 0, "Coral")
+    # ranking_worksheet.write(3, 0, "Algae")
+    # ranking_worksheet.write(0, 2, "Total")
+    # ranking_worksheet.write(0, 3, "S,C,A")
+    # ranking_worksheet.write(0, 4, "Auto")
+    # ranking_worksheet.write(0, 5, "S,C,A")
+    # ranking_worksheet.write(0, 6, "Tele")
+    # ranking_worksheet.write(0, 7, "S,C,A")
+    # ranking_worksheet.write(0, 8, "Coral")
+    # ranking_worksheet.write(0, 9, "S,C,A")
+    # ranking_worksheet.write(0, 10, "Algae")
+    # ranking_worksheet.write(0, 11, "S,C,A")
+    # ranking_worksheet.write(0, 12, "Rice Score")
+    # ranking_worksheet.write(0, 13, "S,C,A, CLIMB")
+    # ranking_worksheet.write(0, 14, "Rice Score")
+    # if len(all_team_data.values()) < 75:
+    #     for i in range(len(all_team_data.values())):
+    #         ranking_worksheet.write(i + 1, 2, total_points_rankings_team_names[i])
+    #         ranking_worksheet.write(i + 1, 4, auto_score_rankings_team_names[i])
+    #         ranking_worksheet.write(i + 1, 6, tele_score_rankings_team_names[i])
+    #         ranking_worksheet.write(i + 1, 12, rice_score_rankings_team_names[i])
+    #         ranking_worksheet.write(i + 1, 15, rice_scores[i])
+    # for i, worksheet in enumerate(output_worksheets):
+    #     if not i == 0:
+    #         for e in range(len(total_points_rankings_team_names)):
+    #             if team_num_list[i-1] == total_points_rankings_team_names[e]:
+    #                 worksheet.write(1, 2, e+1)
+    #         for e in range(len(team_num_list)):
+    #             if team_num_list[i-1] ==auto_score_rankings_team_names[e]:
+    #                 worksheet.write(2, 2, e+1)
+    #         for e in range(len(team_num_list)):
+    #             if team_num_list[i-1] == tele_score_rankings_team_names[e]:
+    #                 worksheet.write(3, 2, e+1)
+    #         for e in range(len(coral_score_rankings_team_names)):
+    #             if team_num_list[i-1] == coral_score_rankings_team_names[e]:
+    #                 worksheet.write(4, 2, e+1)
+    #         for e in range(len(team_num_list)):
+    #             if team_num_list[i-1] == algae_score_rankings_team_names[e]:
+    #                 worksheet.write(5, 2, e+1)
+    #         for e in range(len(team_num_list)):
+    #             if team_num_list[i-1] == rice_score_rankings_team_names[e]:
+    #                 worksheet.write(6, 2, e+1)
             
             # for e, team in enumerate(team_num_list):
             #     if team == total_points_rankings_team_names[e]:
