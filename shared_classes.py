@@ -44,15 +44,22 @@ class TeamData:
     drivetrain: str = ""
     fuelCapacity: int = 0
 
+    commenters = []
+    comments = []
 
-    commentNum: int = 1
-    quantativeAve: float = 1
     drivetrain: str = ""
-    aveSpeed: float = 0
-    aveDriver: float = 0
-    swerve: str = ""
-    climb: str  = "" 
+    swerve: bool = False
     riceScore: float = 0
+
+    passes: str = ""
+    robotBroke: bool = False
+    auto: str = ""
+    speed: str = ""
+    pickupSpeed: str = ""
+    scoringSpeed: str = ""
+    driverDecisiveness: str = ""
+    balance: str = ""
+    wouldYouPick: str = ""
 
 @dataclass
 class scoutingAccuracyMatch:

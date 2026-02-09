@@ -100,12 +100,19 @@ def getStringSeparated(unsortedString: str):
     baseOfSubString = 0
     for i, char in enumerate(unsortedString):
         newString = ""
-        if(char == ','):
-            for e in range(i-baseOfSubString):
-                newString = newString+unsortedString[e+baseOfSubString]
+        if((char == ',') or (i == unsortedString.__len__() - 1)):
+            for e in range(i-baseOfSubString + 1):
+                if((not (unsortedString[e+baseOfSubString] == ',')) and (not (unsortedString[e+baseOfSubString] == ' '))):
+                    newString = newString+unsortedString[e+baseOfSubString]
             sortedStrings.append(newString)
             baseOfSubString = i+1
     return sortedStrings
+
+quantative_values = {
+    "Bad": 0,
+    "Ok": 0.5,
+    "Good": 1
+}
     
 
 
@@ -123,8 +130,23 @@ with open(input_file_name, "r", newline="") as input_csv_file:
             # Put all of the information from a single row in excel into a python object
             # called "team_match_entry" to make it easier to deal with later on
             # print(f"Processing Row Number {row_num + 1}")
+            # strings = getStringSeparated(row_data[8])
+            # print(strings[2])
             strings = getStringSeparated(row_data[8])
-            print(strings[2])
+
+            defendedScoringBool = False
+            defendedIntakingBool = False
+            defendedPathingBool = False
+
+            for string in strings:  
+                match string:
+                    case "Blockotherteamsfromscoring":
+                        defendedScoringBool = True
+                    case "Blockotherteamsfrompickingupfuel":
+                        defendedIntakingBool = True
+                    case "Blockthepathofotherrobotscrossingthefield":
+                        defendedPathingBool = True
+
             team_match_entry = shared_classes.SingleTeamSingleMatchEntry(
                 commenter = row_data[2],
                 team_num = parse_team_number(row_data[3]),
@@ -134,8 +156,25 @@ with open(input_file_name, "r", newline="") as input_csv_file:
 
                 teleFuel = row_data[7],
 
-                defenseOnScoring = True if row_data[8] == "Yes" else False,
+                defenseOnScoring = defendedScoringBool,
+                defenseOnIntaking = defendedIntakingBool,
+                defenseOnPathing = defendedPathingBool,
 
+                l1Climb = True if row_data[9] == "L1" else False,
+                l2Climb = True if row_data[9] == "L2" else False,
+                l3Climb = True if row_data[9] == "L3" else False,
+
+                auto = quantative_values.get(row_data[10]),
+                speed = quantative_values.get(row_data[11]),
+                passes = quantative_values.get(row_data[12]),
+                pickupSpeed = quantative_values.get(row_data[13]),
+                scoringSpeed = quantative_values.get(row_data[14]),
+                driverDecisiveness = quantative_values.get(row_data[15]),
+                balance = quantative_values.get(row_data[16]),
+                wouldYouPick = quantative_values.get(row_data[17]),
+
+                robotBroke = True if row_data[18] == "Yes - if yes please add details in your comments" else False,
+                comment = row_data[19]
             )
             # Add the single-team single-match entry (i.e. data from one row) to a list
             # containing all of these entries
@@ -241,27 +280,14 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                             single_teams_worksheet.write(9, 0, row_data[5])
                             single_teams_data.drivetrain = row_data[5]
                             if row_data[5] == "Swerve":
-                                single_teams_data.swerve = "✅"
+                                single_teams_data.swerve = True
                             else:
-                                single_teams_data.swerve = "❌"
-
-                            # single_teams_worksheet.write(5, 2, row_data[5])
-                            # single_teams_worksheet.write(6, 2, row_data[7])
-                            # single_teams_worksheet.write(7, 2, row_data[17])
-                            # single_teams_worksheet.write(8, 2, row_data[18])
-                            # single_teams_worksheet.write(9, 2, row_data[19])
-                            # single_teams_worksheet.write(10, 2, row_data[6])
-                            # single_teams_worksheet.write(11, 2, row_data[20])
-                            1==1
+                                single_teams_data.swerve = False
+                            single_teams_data.fuelCapacity = row_data[7]
 
                 for i, match in enumerate(single_teams_data.match_data):
-                    # qualative = [single_teams_data.auto, single_teams_data.speed, single_teams_data.pickupSpeed, single_teams_data.scoring, 
-                    # single_teams_data.driverDecisiveness, single_teams_data.balance, single_teams_data.wouldYouPick]
-                    quantative_values = {
-                        "Bad": 0,
-                        "Ok": 0.5,
-                        "Good": 1
-                    }
+
+                    
 
                     auto = quantative_values.get(match.auto)
                     speed = quantative_values.get(match.speed)
