@@ -3,6 +3,8 @@ import os
 import xlsxwriter
 import tba_match_sorting
 import shared_classes
+import json
+from dataclasses import dataclass, asdict, is_dataclass
 
 input_file_name = "input.csv"
 output_file_name = "output_data.xlsx"
@@ -10,8 +12,10 @@ output_file_name = "output_data.xlsx"
 allMatchesValidationData = [shared_classes.scoutingAccuracyMatch]
 all_team_match_entries = []
 all_team_data: dict[int, shared_classes.TeamData] = {}
+
 team_num_list = []
 output_worksheets = []
+
 total_points_rankings = []
 tele_score_rankings = []
 auto_score_rankings = []
@@ -151,10 +155,10 @@ with open(input_file_name, "r", newline="") as input_csv_file:
                 commenter = row_data[2],
                 team_num = parse_team_number(row_data[3]),
                 qual_match_num=parse_match_number(row_data[4]),
-                autoFuel = row_data[5],
+                autoFuel = parse_match_number(row_data[5]),
                 autoL1Climb = True if row_data[6] == "Yes" else False,
 
-                teleFuel = row_data[7],
+                teleFuel = parse_match_number(row_data[7]),
 
                 defenseOnScoring = defendedScoringBool,
                 defenseOnIntaking = defendedIntakingBool,
@@ -287,126 +291,82 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
 
                 for i, match in enumerate(single_teams_data.match_data):
 
+                    # for ever match the team played add the point now and avereges the by times itterated after
+                    single_teams_data.aveAutoClimbPoints += 15 if match.autoL1Climb else 0
                     
+                    single_teams_data.aveAutoFuelPoints += match.autoFuel
 
-                    auto = quantative_values.get(match.auto)
-                    speed = quantative_values.get(match.speed)
-                    pickupSpeed = quantative_values.get(match.pickupSpeed)
-                    scoring = quantative_values.get(match.scoring)
-                    driverDecisiveness = quantative_values.get(match.driverDecisiveness)
-                    balance = quantative_values.get(match.balance)
-                    wouldYouPick = quantative_values.get(match.wouldYouPick)
+                    single_teams_data.aveTeleFuelPoint += match.teleFuel
 
-                    # print(auto)
-                    # print(speed)
-                    # print(pickupSpeed)
-                    single_teams_data.quantativeAve = single_teams_data.quantativeAve + (
-                        auto + speed + pickupSpeed +
-                        scoring + driverDecisiveness + balance + wouldYouPick) / 7
+                    single_teams_data.aveTeleClimbPoints += 10 if match.l1Climb else 0
+                    single_teams_data.aveTeleClimbPoints += 20 if match.l2Climb else 0
+                    single_teams_data.aveTeleClimbPoints += 30 if match.l3Climb else 0
 
-                    if match.robotBroke == "No":
-                        single_teams_worksheet.write(single_teams_data.commentNum, 4, "❌")
-                    else:
-                        single_teams_worksheet.write(single_teams_data.commentNum, 4, "✅")
-                    single_teams_worksheet.write(single_teams_data.commentNum, 5, match.qual_match_num)
-                    single_teams_worksheet.write(single_teams_data.commentNum, 6, match.commenter)
-                    single_teams_worksheet.write(single_teams_data.commentNum, 7, match.comment)
-                    single_teams_worksheet.write(single_teams_data.commentNum + 38, 3, match.commenter)
-                    single_teams_data.commentNum =  single_teams_data.commentNum + 1
-                        # for ever match the team played add the point now and avereges the by times itterated after
-                    # if match.leave == True:
-                    #     # print(match.leave)
-                    #     single_teams_data.aveLeavePoints = single_teams_data.aveLeavePoints + leavePointsValue
-                    # single_teams_data.aveSpeed = speed
-                    # single_teams_data.aveDriver = driverDecisiveness
-                    # single_teams_data.aveAutoL4Points = single_teams_data.aveAutoL4Points + (match.autoL4 * autoL4PointsValue)
-                    # single_teams_data.aveAutoL3Points = single_teams_data.aveAutoL3Points + (match.autoL3 * autoL3PointsValue)
-                    # single_teams_data.aveAutoL2Points = single_teams_data.aveAutoL2Points + (match.autoL2 * autoL2PointsValue)
-                    # single_teams_data.aveAutoL1Points = single_teams_data.aveAutoL1Points + (match.autoL1 * autoL1PointsValue)
-                    # single_teams_data.aveAutoProcessorPoints = single_teams_data.aveAutoProcessorPoints + (match.autoProcessor * 
-                    # processorPointsValue)
-                    # single_teams_data.aveAutoNetPoints = single_teams_data.aveAutoNetPoints + (match.autoNet * netPointsValue)
-                    # single_teams_data.aveTeleL4Points = single_teams_data.aveTeleL4Points + (match.teleL4 * L4PointsValue)
-                    # single_teams_data.aveTeleL3Points = single_teams_data.aveTeleL3Points + (match.teleL3 * L3PointsValue)
-                    # single_teams_data.aveTeleL2Points = single_teams_data.aveTeleL2Points + (match.teleL2 * L2PointsValue)
-                    # single_teams_data.aveTeleL1Points = single_teams_data.aveTeleL1Points + (match.teleL1 * L1PointsValue)
-                    # single_teams_data.aveTeleProcessorPoints = single_teams_data.aveTeleProcessorPoints + (match.teleProcessor * 
-                    # processorPointsValue)
-                    # single_teams_data.aveTeleNetPoints = single_teams_data.aveTeleNetPoints + (match.teleNet * netPointsValue)
-                    # climb: int = 0
-                    # if match.climb == "Climb on the deep cage":
-                    #     single_teams_data.aveBargePoints = single_teams_data.aveBargePoints + 12
-                    #     single_teams_data.deepClimb = single_teams_data.deepClimb + 1
-                    #     climb = 12
-                    # elif match.climb == "Climb on the shallow cage":
-                    #     single_teams_data.aveBargePoints = single_teams_data.aveBargePoints + 6
-                    #     single_teams_data.shallowClimb = single_teams_data.shallowClimb + 1
-                    #     climb = 6
-                    # elif match.climb == "Park in the barge zone":
-                    #     single_teams_data.aveBargePoints = single_teams_data.aveBargePoints + 2
-                    #     single_teams_data.park = single_teams_data.park + 1
-                    #     climb = 2
-                    # else:
-                    #     single_teams_data.noClimb = single_teams_data.noClimb + 1
-                    #     climb = 0
-                    
-                    # single_teams_data.aveAutoPoints = (single_teams_data.aveLeavePoints + 
-                    # single_teams_data.aveAutoL4Points + single_teams_data.aveAutoL3Points + single_teams_data.aveAutoL2Points +
-                    # single_teams_data.aveAutoL1Points + single_teams_data.aveAutoProcessorPoints + single_teams_data.aveAutoNetPoints)
+                    single_teams_data.robotBroke.append(match.robotBroke)
+                    single_teams_data.comments.append(match.comment)
+                    single_teams_data.commenters.append(match.commenter)
 
-                    # single_teams_data.aveTelePoints = (single_teams_data.aveTeleL4Points + single_teams_data.aveTeleL3Points + 
-                    # single_teams_data.aveTeleL2Points + single_teams_data.aveTeleL1Points +
-                    # single_teams_data.aveTeleProcessorPoints + single_teams_data.aveTeleNetPoints + single_teams_data.aveBargePoints)
 
-                    # single_teams_data.avePoints = single_teams_data.aveAutoPoints + single_teams_data.aveTelePoints
+                    single_teams_data.avePasses += match.passes
+                    single_teams_data.aveAuto += match.auto
+                    single_teams_data.aveSpeed += match.speed
+                    single_teams_data.avePickupSpeed += match.pickupSpeed
+                    single_teams_data.aveScoringSpeed += match.scoringSpeed
+                    single_teams_data.avePickupSpeed += match.pickupSpeed
+                    single_teams_data.aveDriverDecisiveness += match.driverDecisiveness
+                    single_teams_data.aveBalance += match.balance
+                    single_teams_data.aveWouldYouPick += match.wouldYouPick
 
-                    # single_teams_data.aveAlgaeRemoved = single_teams_data.aveAlgaeRemoved + match.algaeRemoved
 
-                    # points.append(leavePointsValue+(match.autoL4 * autoL4PointsValue)+(match.autoL3 * autoL3PointsValue)+(match.autoL2 * autoL2PointsValue) +
-                    # (match.autoL1 * autoL1PointsValue)+(match.autoProcessor * processorPointsValue)+(match.autoNet * netPointsValue)+
-                    # (match.teleL4 * L4PointsValue)+(match.teleL3 * L3PointsValue)+(match.teleL2 * L2PointsValue)+(match.teleL1 * L1PointsValue)+
-                    # (match.teleProcessor * processorPointsValue)+(match.teleNet * netPointsValue)+climb)
-                    
-                    # auto_points.append((leavePointsValue+(match.autoL4 * autoL4PointsValue)+(match.autoL3 * autoL3PointsValue)+(match.autoL2 * autoL2PointsValue) +
-                    # (match.autoL1 * autoL1PointsValue)+(match.autoProcessor * processorPointsValue)+(match.autoNet * netPointsValue)))
-                    
-                    # tele_points.append(((match.teleL4 * L4PointsValue)+(match.teleL3 * L3PointsValue)+(match.teleL2 * L2PointsValue)+(match.teleL1 * L1PointsValue)+
-                    # (match.teleProcessor * processorPointsValue)+(match.teleNet * netPointsValue)+climb))
-                    
                     matches.append(match.qual_match_num)
 
                     global timesIterated
                     timesIterated = i + 1
-                single_teams_data.quantativeAve = single_teams_data.quantativeAve/timesIterated
-                single_teams_data.aveAlgaeRemoved = single_teams_data.aveAlgaeRemoved/timesIterated
-                single_teams_data.aveLeavePoints = single_teams_data.aveLeavePoints/timesIterated
-                single_teams_data.aveAutoL4Points = single_teams_data.aveAutoL4Points/timesIterated
-                single_teams_data.aveAutoL3Points = single_teams_data.aveAutoL3Points/timesIterated
-                single_teams_data.aveAutoL2Points = single_teams_data.aveAutoL2Points/timesIterated
-                single_teams_data.aveAutoL1Points = single_teams_data.aveAutoL1Points/timesIterated
-                single_teams_data.aveAutoProcessorPoints = single_teams_data.aveAutoProcessorPoints/timesIterated
-                single_teams_data.aveAutoNetPoints = single_teams_data.aveAutoNetPoints/timesIterated
-                single_teams_data.aveTeleL4Points = single_teams_data.aveTeleL4Points/timesIterated
-                single_teams_data.aveTeleL3Points = single_teams_data.aveTeleL3Points/timesIterated
-                single_teams_data.aveTeleL2Points = single_teams_data.aveTeleL2Points/timesIterated
-                single_teams_data.aveTeleL1Points = single_teams_data.aveTeleL1Points/timesIterated
-                single_teams_data.aveTeleProcessorPoints = single_teams_data.aveTeleProcessorPoints/timesIterated
-                single_teams_data.aveTeleNetPoints = single_teams_data.aveTeleNetPoints/timesIterated
-                single_teams_data.aveBargePoints = single_teams_data.aveBargePoints/timesIterated
-                single_teams_data.aveAutoPoints = single_teams_data.aveAutoPoints/timesIterated
-                single_teams_data.aveTelePoints = single_teams_data.aveTelePoints/timesIterated
-                single_teams_data.avePoints = single_teams_data.avePoints/timesIterated
-                
-                single_teams_data.aveCoralPoints = single_teams_data.aveAutoL4Points + single_teams_data.aveAutoL3Points + single_teams_data.aveAutoL2Points + single_teams_data.aveAutoL1Points
-                single_teams_data.aveTeleL4Points + single_teams_data.aveTeleL3Points + single_teams_data.aveTeleL2Points + single_teams_data.aveTeleL1Points
-                
-                single_teams_data.aveAlgaePoints = single_teams_data.aveAutoProcessorPoints + single_teams_data.aveAutoNetPoints + single_teams_data.aveTeleProcessorPoints 
-                + single_teams_data.aveTeleNetPoints
+                single_teams_data.aveAutoClimbPoints = single_teams_data.aveAutoClimbPoints/timesIterated
+                single_teams_data.aveAutoFuelPoints = single_teams_data.aveAutoFuelPoints/timesIterated
+                single_teams_data.aveTeleFuelPoint = single_teams_data.aveTeleFuelPoint/timesIterated
+                single_teams_data.aveTeleClimbPoints = single_teams_data.aveTeleClimbPoints/timesIterated
 
-                single_teams_data.riceScore = (single_teams_data.aveAutoPoints*0.333)+(single_teams_data.aveBargePoints*0.333)+(((single_teams_data.aveSpeed)
-                +(single_teams_data.aveDriver) * 5) / 0.333)
+                single_teams_data.avePasses = match.passes/timesIterated
+                single_teams_data.aveAuto = match.auto/timesIterated
+                single_teams_data.aveSpeed = match.speed/timesIterated
+                single_teams_data.avePickupSpeed = match.pickupSpeed/timesIterated
+                single_teams_data.aveScoringSpeed = match.scoringSpeed/timesIterated
+                single_teams_data.avePickupSpeed = match.pickupSpeed/timesIterated
+                single_teams_data.aveDriverDecisiveness = match.driverDecisiveness/timesIterated
+                single_teams_data.aveBalance = match.balance/timesIterated
+                single_teams_data.aveWouldYouPick = match.wouldYouPick/timesIterated
 
-                single_teams_worksheet.write(8, 2, single_teams_data.quantativeAve)
+                single_teams_data.aveAutoPoints = single_teams_data.aveAutoClimbPoints + single_teams_data.aveAutoFuelPoints
+                single_teams_data.aveTelePoints = single_teams_data.aveTeleClimbPoints + single_teams_data.aveTeleClimbPoints
+                single_teams_data.avePoints = single_teams_data.aveTelePoints + single_teams_data.aveAutoPoints
+
+# this is all chat gpt to convert to json
+
+# 1. Define the custom JSON encoder
+class DataclassEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if is_dataclass(obj):
+            # Convert the dataclass instance to a dictionary
+            return asdict(obj)
+        # Let the base class default method handle other types
+        return super().default(obj)
+
+
+# 3. Write the list to a JSON file using the custom encoder
+file_path = "outputWebsiteData.json"
+try:
+    with open(file_path, 'w', encoding='utf-8') as json_file:
+        # Use the custom encoder with json.dump()
+        json.dump(all_team_data, json_file, cls=DataclassEncoder, indent=4)
+    print(f"Successfully wrote data to {file_path}")
+except IOError as e:
+    print(f"An error occurred while writing the file: {e}")
+
+                # single_teams_data.riceScore = (single_teams_data.aveAutoPoints*0.333)+(single_teams_data.aveBargePoints*0.333)+(((single_teams_data.aveSpeed)
+                # +(single_teams_data.aveDriver) * 5) / 0.333)
+
+                # single_teams_worksheet.write(8, 2, single_teams_data.quantativeAve)
 
                 # if (single_teams_data.aveCoralPoints > 10):
                 #     single_teams_data.coral = "✅"

@@ -12,34 +12,37 @@ class SingleTeamSingleMatchEntry:
     l2Climb: bool = False
     l3Climb: bool = False
     
-    commenter: str = ""
-    comment: str = ""
-    passes: str = ""
+
     robotBroke: bool = False
-    auto: str = ""
-    speed: str = ""
-    pickupSpeed: str = ""
-    scoringSpeed: str = ""
-    driverDecisiveness: str = ""
-    balance: str = ""
-    wouldYouPick: str = ""
+
+    passes: float = 0.0
+    auto: float = 0.0
+    speed: float = 0.0
+    pickupSpeed: float = 0.0
+    scoringSpeed: float = 0.0
+    driverDecisiveness: float = 0.0
+    balance: float = 0.0
+    wouldYouPick: float = 0.0
 
     defenseOnScoring: bool = False
     defenseOnIntaking: bool = False
     defenseOnPathing: bool = False
 
+    commenter: str = ""
+    comment: str = ""
+
 @dataclass
 class TeamData:
     team_num: int = 0
     match_data: list = field(default_factory=list)
-    aveAutoPoints: float = 0
-    aveAutoFuelPoints: float = 0
-    aveAutoClimbPoints: float = 0
+    aveAutoPoints: float = 0.0
+    aveAutoFuelPoints: float = 0.0
+    aveAutoClimbPoints: float = 0.0
 
-    aveTeleFuelPoint: float = 0
-    aveTeleClimbPoints: float = 0
-    aveTelePoints: float = 0
-    avePoints: float = 0
+    aveTeleFuelPoint: float = 0.0
+    aveTeleClimbPoints: float = 0.0
+    aveTelePoints: float = 0.0
+    avePoints: float = 0.0
 
     drivetrain: str = ""
     fuelCapacity: int = 0
@@ -49,17 +52,17 @@ class TeamData:
 
     drivetrain: str = ""
     swerve: bool = False
-    riceScore: float = 0
+    riceScore: float = 0.0
 
-    passes: str = ""
-    robotBroke: bool = False
-    auto: str = ""
-    speed: str = ""
-    pickupSpeed: str = ""
-    scoringSpeed: str = ""
-    driverDecisiveness: str = ""
-    balance: str = ""
-    wouldYouPick: str = ""
+    avePasses: float = 0.0
+    robotBroke= [] 
+    aveAuto: float = 0.0
+    aveSpeed: float = 0.0
+    avePickupSpeed: float = 0.0
+    aveScoringSpeed: float = 0.0
+    aveDriverDecisiveness: float = 0.0
+    aveBalance: float = 0.0
+    aveWouldYouPick: float = 0.0
 
 @dataclass
 class scoutingAccuracyMatch:
