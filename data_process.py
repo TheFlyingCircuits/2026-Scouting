@@ -338,7 +338,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 single_teams_data.aveWouldYouPick = match.wouldYouPick/timesIterated
 
                 single_teams_data.aveAutoPoints = single_teams_data.aveAutoClimbPoints + single_teams_data.aveAutoFuelPoints
-                single_teams_data.aveTelePoints = single_teams_data.aveTeleClimbPoints + single_teams_data.aveTeleClimbPoints
+                single_teams_data.aveTelePoints = single_teams_data.aveTeleClimbPoints + single_teams_data.aveTeleFuelPoint
                 single_teams_data.avePoints = single_teams_data.aveTelePoints + single_teams_data.aveAutoPoints
 
 # this is all chat gpt to convert to json
