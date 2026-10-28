@@ -120,7 +120,7 @@ quantative_values = {
     
 
 
-with open(input_file_name, "r", newline="") as input_csv_file:
+with open(input_file_name, "r", encoding="utf-8") as input_csv_file:
 
     # Get rid of any existing output file
     if os.path.exists(output_file_name):
@@ -327,19 +327,21 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 single_teams_data.aveTeleFuelPoint = single_teams_data.aveTeleFuelPoint/timesIterated
                 single_teams_data.aveTeleClimbPoints = single_teams_data.aveTeleClimbPoints/timesIterated
 
-                single_teams_data.avePasses = match.passes/timesIterated
-                single_teams_data.aveAuto = match.auto/timesIterated
-                single_teams_data.aveSpeed = match.speed/timesIterated
-                single_teams_data.avePickupSpeed = match.pickupSpeed/timesIterated
-                single_teams_data.aveScoringSpeed = match.scoringSpeed/timesIterated
-                single_teams_data.avePickupSpeed = match.pickupSpeed/timesIterated
-                single_teams_data.aveDriverDecisiveness = match.driverDecisiveness/timesIterated
-                single_teams_data.aveBalance = match.balance/timesIterated
-                single_teams_data.aveWouldYouPick = match.wouldYouPick/timesIterated
+                single_teams_data.avePasses = single_teams_data.avePasses/timesIterated
+                single_teams_data.aveAuto = single_teams_data.aveAuto/timesIterated
+                single_teams_data.aveSpeed = single_teams_data.aveSpeed/timesIterated
+                single_teams_data.avePickupSpeed = single_teams_data.avePickupSpeed/timesIterated
+                single_teams_data.aveScoringSpeed = single_teams_data.aveScoringSpeed/timesIterated
+                single_teams_data.avePickupSpeed = single_teams_data.avePickupSpeed/timesIterated
+                single_teams_data.aveDriverDecisiveness = single_teams_data.aveDriverDecisiveness/timesIterated
+                single_teams_data.aveBalance = single_teams_data.aveBalance/timesIterated
+                single_teams_data.aveWouldYouPick = single_teams_data.aveWouldYouPick/timesIterated
 
-                single_teams_data.aveAutoPoints = single_teams_data.aveAutoClimbPoints + single_teams_data.aveAutoFuelPoints
+                single_teams_data.aveAutoPoints = single_teams_data.aveAutoFuelPoints
                 single_teams_data.aveTelePoints = single_teams_data.aveTeleClimbPoints + single_teams_data.aveTeleFuelPoint
-                single_teams_data.avePoints = single_teams_data.aveTelePoints + single_teams_data.aveAutoPoints
+                single_teams_data.avePoints = single_teams_data.aveTelePoints + single_teams_data.aveAutoPoints + single_teams_data.aveAutoClimbPoints
+                single_teams_data.riceScore = (single_teams_data.aveDriverDecisiveness * 0.5) + (single_teams_data.aveSpeed * 0.2) 
+                + (single_teams_data.aveBalance * 0.15) + (single_teams_data.avePasses * 0.15)
 
 # this is all chat gpt to convert to json
 
